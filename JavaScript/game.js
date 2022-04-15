@@ -6,10 +6,29 @@ const button = document.getElementById('button');
 const tablePosition = table.getBoundingClientRect();
 const ctx = canvas.getContext('2d');
 
+//table creation
+const tableSize = 5;
+for (let i = 0; i < tableSize; i++) {
+  const row = document.createElement('tr');
+  const maxNumber = (tableSize - i) * tableSize;
+  for (let j = 0; j < tableSize; j++) {
+    const cell = document.createElement('th');
+    let current = maxNumber;
+    if (i % 2 === 0) {
+      current -= j;
+    } else {
+      current += -tableSize + j + 1;
+    }
+    cell.textContent = current;
+    cell.setAttribute('id', current);
+    row.appendChild(cell);
+  }
+  table.appendChild(row);
+}
+
 //calculate cell centers
 const cells = {};
-const tableSize = 25;
-for (let i = 1; i <= tableSize; i++) {
+for (let i = 1; i <= Math.pow(tableSize, 2); i++) {
   const element = document.getElementById(i);
   const position = element.getBoundingClientRect();
   //x,y - cell center coordinates
