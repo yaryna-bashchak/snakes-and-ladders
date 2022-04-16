@@ -7,17 +7,18 @@ const tablePosition = table.getBoundingClientRect();
 const ctx = canvas.getContext('2d');
 
 //table creation
-const tableSize = 5;
-for (let i = 0; i < tableSize; i++) {
+const tableWidth = 5;
+const tableSize = Math.pow(tableWidth, 2);
+for (let i = 0; i < tableWidth; i++) {
   const row = document.createElement('tr');
-  const maxNumber = (tableSize - i) * tableSize;
-  for (let j = 0; j < tableSize; j++) {
+  const maxNumber = (tableWidth - i) * tableWidth;
+  for (let j = 0; j < tableWidth; j++) {
     const cell = document.createElement('th');
     let current = maxNumber;
     if (i % 2 === 0) {
       current -= j;
     } else {
-      current += -tableSize + j + 1;
+      current += -tableWidth + j + 1;
     }
     cell.textContent = current;
     cell.setAttribute('id', current);
@@ -28,7 +29,7 @@ for (let i = 0; i < tableSize; i++) {
 
 //calculate cell centers
 const cells = {};
-for (let i = 1; i <= Math.pow(tableSize, 2); i++) {
+for (let i = 1; i <= tableSize; i++) {
   const element = document.getElementById(i);
   const position = element.getBoundingClientRect();
   //x,y - cell center coordinates
@@ -59,7 +60,18 @@ class Counter {
   }
   step() {
     this.score += Math.floor(Math.random() * 6) + 1;
+    this.checkScore();
     this.draw();
+  }
+  checkScore() {
+    if (this.score > tableSize) {
+      const delta = this.score - tableSize;
+      this.score = tableSize - delta;
+    } else if (this.score === tableSize) {
+      button.onclick = () => {};
+      alert('You win!');
+      alert('To play again please reload the page');
+    }
   }
 }
 
