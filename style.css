@@ -25,3 +25,35 @@ th {
 canvas {
   position: absolute;
 }
+
+#play-space {
+  display: grid;
+  grid-template-columns: 620px auto;
+}
+
+p {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  margin: 10px 0px 10px;
+}
+
+button {
+  display: block;
+  width: 160px;
+  height: 50px;
+  background-color: #8fa800;
+  border: 2px solid #8fa800;
+  color: white;
+  font-size: 18px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: white;
+  color: #8fa800;
+}
+
+button:active {
+  background-color: #8fa80028;
+}

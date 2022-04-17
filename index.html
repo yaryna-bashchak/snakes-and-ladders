@@ -8,10 +8,18 @@
   <title>Snakes and Ladders</title>
 </head>
 <body>
-  <h1>Гра "Змії та Драбини"</h1>
-  <canvas id="canvas" width="600px" height="600px"></canvas>
-  <table id="table"></table>
-  <button id="button" margin="100px">Button</button>
+  <h1>Game "Snakes and Ladders"</h1>
+  <div id="play-space">
+    <canvas id="canvas" width="600px" height="600px"></canvas>
+    <table id="table"></table>
+    <div id="panel">
+      <button id="new player">New player</button>
+      <button id="dice">Roll the dice</button>
+      <p id="last-event">The game hasn't started yet</p>
+      <p id="winner"></p>
+      <p id="info"></p>
+    </div>
+  </div>
   <script src="JavaScript/game.js"></script>
 </body>
 </html>

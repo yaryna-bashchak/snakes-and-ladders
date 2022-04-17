@@ -2,7 +2,11 @@
 
 const canvas = document.getElementById('canvas');
 const table = document.getElementById('table');
-const button = document.getElementById('button');
+const buttonDice = document.getElementById('dice');
+const buttonNewPlayer = document.getElementById('new player');
+const lastEvent = document.getElementById('last-event');
+const winner = document.getElementById('winner');
+const info = document.getElementById('info');
 const tablePosition = table.getBoundingClientRect();
 const ctx = canvas.getContext('2d');
 
@@ -59,26 +63,33 @@ class Counter {
       coord.y - this.height / 2);
   }
   step() {
-    this.score += Math.floor(Math.random() * 6) + 1;
-    this.checkScore();
-    this.draw();
+    const point = Math.floor(Math.random() * 6) + 1;
+    this.score += point;
+    this.note(point);
   }
   checkScore() {
     if (this.score > tableSize) {
       const delta = this.score - tableSize;
       this.score = tableSize - delta;
     } else if (this.score === tableSize) {
-      button.onclick = () => {};
-      alert('You win!');
-      alert('To play again please reload the page');
+      buttonDice.onclick = () => {};
+      winner.textContent = '🎉Player1 win!';
+      info.textContent = '🔁To play again please reload the page';
     }
+  }
+  note(point) {
+    lastEvent.textContent = `Player1: ${point} point(-s)`;
   }
 }
 
 const counter1 = new Counter();
 
-button.onclick = () => {
+buttonDice.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   counter1.step();
+  counter1.checkScore();
+  counter1.draw();
   console.log(counter1.score);
 };
+
+buttonNewPlayer.onclick = () => {};
