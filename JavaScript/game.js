@@ -43,10 +43,13 @@ for (let i = 1; i <= tableSize; i++) {
 }
 
 class Counter {
-  constructor() {
+  constructor(ctx, cells) {
+    this.ctx = ctx;
+    this.cells = cells;
     this.score = 1;
     this.number = Math.floor(Math.random() * 10) + 1;
   }
+
   set number(i) {
     this.image = new Image();
     this.image.src = `counter-images/counter${i}.png`;
@@ -56,17 +59,20 @@ class Counter {
       this.draw();
     };
   }
+
   draw() {
-    const coord = cells[`c${this.score}`];
-    ctx.drawImage(this.image,
+    const coord = this.cells[`c${this.score}`];
+    this.ctx.drawImage(this.image,
       coord.x - this.width / 2,
       coord.y - this.height / 2);
   }
+
   step() {
     const point = Math.floor(Math.random() * 6) + 1;
     this.score += point;
     this.note(point);
   }
+
   checkScore() {
     if (this.score > tableSize) {
       const delta = this.score - tableSize;
@@ -77,12 +83,13 @@ class Counter {
       info.textContent = '🔁To play again please reload the page';
     }
   }
+
   note(point) {
     lastEvent.textContent = `Player1: ${point} point(-s)`;
   }
 }
 
-const counter1 = new Counter();
+const counter1 = new Counter(ctx, cells);
 
 buttonDice.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
