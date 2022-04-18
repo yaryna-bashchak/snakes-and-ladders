@@ -11,7 +11,7 @@ const tablePosition = table.getBoundingClientRect();
 const ctx = canvas.getContext('2d');
 
 //table creation
-const tableWidth = 5;
+const tableWidth = 10;
 const tableSize = Math.pow(tableWidth, 2);
 for (let i = 0; i < tableWidth; i++) {
   const row = document.createElement('tr');
@@ -39,7 +39,7 @@ for (let i = 1; i <= tableSize; i++) {
   //x,y - cell center coordinates
   const x = (position.left + position.right) / 2 - tablePosition.left;
   const y = (position.top + position.bottom) / 2 - tablePosition.top;
-  cells[i] = { x, y };
+  cells[i] = { x, y, height: position.height };
 }
 
 class Counter {
@@ -54,8 +54,9 @@ class Counter {
     this.image = new Image();
     this.image.src = `counter-images/counter${i}.png`;
     this.image.onload = () => {
-      this.width = this.image.naturalWidth;
-      this.height = this.image.naturalHeight;
+      this.height = this.cells['1'].height * 0.8;
+      const k = this.height / this.image.naturalHeight;
+      this.width = this.image.naturalWidth * k;
       this.draw();
     };
   }
@@ -64,7 +65,8 @@ class Counter {
     const coord = this.cells[this.score];
     this.ctx.drawImage(this.image,
       coord.x - this.width / 2,
-      coord.y - this.height / 2);
+      coord.y - this.height / 2,
+      this.width, this.height);
   }
 
   step() {
@@ -98,11 +100,12 @@ class Counter {
 
 //Ladders
 const ladders = {
-  '2': 12,
-  '5': 9,
-  '8': 11,
-  '14': 21,
-  '6': 22,
+  '2': 36,
+  '12': 53,
+  '23': 60,
+  '45': 82,
+  '65': 94,
+  '34': 46,
   'color': '#0db036',
   draw(ctx, cells) {
     const drawLine = key => {
@@ -122,10 +125,11 @@ const ladders = {
 
 //Snakes
 const snakes = {
-  '15': 7,
-  '23': 16,
-  '18': 10,
-  '17': 3,
+  '58': 21,
+  '75': 54,
+  '84': 62,
+  '93': 72,
+  '80': 43,
   '13': 4,
   'color': '#d66519',
 };
