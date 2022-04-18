@@ -87,7 +87,32 @@ class Counter {
   note(point) {
     lastEvent.textContent = `Player1: ${point} point(-s)`;
   }
+
+  carry(dict) {
+    if (dict.hasOwnProperty(this.score)) {
+      info.textContent = this.score + ' => ' + dict[this.score];
+      this.score = dict[this.score];
+    }
+  }
 }
+
+//Ladders
+const ladders = {
+  '2': 12,
+  '5': 9,
+  '8': 11,
+  '14': 21,
+  '6': 22,
+};
+
+//Snakes
+const snakes = {
+  '10': 7,
+  '23': 16,
+  '18': 10,
+  '17': 3,
+  '13': 4,
+};
 
 const counter1 = new Counter(ctx, cells);
 
@@ -95,6 +120,8 @@ buttonDice.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   counter1.step();
   counter1.checkScore();
+  counter1.carry(ladders);
+  counter1.carry(snakes);
   counter1.draw();
   console.log(counter1.score);
 };
