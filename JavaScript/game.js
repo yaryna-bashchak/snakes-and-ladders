@@ -39,7 +39,7 @@ for (let i = 1; i <= tableSize; i++) {
   //x,y - cell center coordinates
   const x = (position.left + position.right) / 2 - tablePosition.left;
   const y = (position.top + position.bottom) / 2 - tablePosition.top;
-  cells[`c${i}`] = { x, y };
+  cells[i] = { x, y };
 }
 
 class Counter {
@@ -61,7 +61,7 @@ class Counter {
   }
 
   draw() {
-    const coord = this.cells[`c${this.score}`];
+    const coord = this.cells[this.score];
     this.ctx.drawImage(this.image,
       coord.x - this.width / 2,
       coord.y - this.height / 2);
@@ -103,6 +103,20 @@ const ladders = {
   '8': 11,
   '14': 21,
   '6': 22,
+  draw(ctx, cells) {
+    const drawLine = key => {
+      ctx.beginPath();
+      ctx.moveTo(cells[key].x, cells[key].y);
+      ctx.lineTo(cells[this[key]].x, cells[this[key]].y);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#0db036';
+      ctx.stroke();
+    };
+    Object.keys(this)
+      .filter(key => typeof this[key] === 'number')
+      .forEach(drawLine);
+
+  },
 };
 
 //Snakes
@@ -115,6 +129,7 @@ const snakes = {
 };
 
 const counter1 = new Counter(ctx, cells);
+ladders.draw(ctx, cells);
 
 buttonDice.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -122,6 +137,7 @@ buttonDice.onclick = () => {
   counter1.checkScore();
   counter1.carry(ladders);
   counter1.carry(snakes);
+  ladders.draw(ctx, cells);
   counter1.draw();
   console.log(counter1.score);
 };
