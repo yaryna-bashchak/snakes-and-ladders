@@ -103,13 +103,14 @@ const ladders = {
   '8': 11,
   '14': 21,
   '6': 22,
+  'color': '#0db036',
   draw(ctx, cells) {
     const drawLine = key => {
       ctx.beginPath();
       ctx.moveTo(cells[key].x, cells[key].y);
       ctx.lineTo(cells[this[key]].x, cells[this[key]].y);
       ctx.lineWidth = 3;
-      ctx.strokeStyle = '#0db036';
+      ctx.strokeStyle = this.color;
       ctx.stroke();
     };
     Object.keys(this)
@@ -121,15 +122,19 @@ const ladders = {
 
 //Snakes
 const snakes = {
-  '10': 7,
+  '15': 7,
   '23': 16,
   '18': 10,
   '17': 3,
   '13': 4,
+  'color': '#d66519',
 };
+
+snakes.draw = ladders.draw.bind(snakes);
 
 const counter1 = new Counter(ctx, cells);
 ladders.draw(ctx, cells);
+snakes.draw(ctx, cells);
 
 buttonDice.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -138,6 +143,7 @@ buttonDice.onclick = () => {
   counter1.carry(ladders);
   counter1.carry(snakes);
   ladders.draw(ctx, cells);
+  snakes.draw(ctx, cells);
   counter1.draw();
   console.log(counter1.score);
 };
