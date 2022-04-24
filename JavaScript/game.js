@@ -11,6 +11,7 @@ const tablePosition = table.getBoundingClientRect();
 const ctx = canvas.getContext('2d');
 
 //table creation
+
 const tableWidth = 10;
 const tableSize = Math.pow(tableWidth, 2);
 for (let i = 0; i < tableWidth; i++) {
@@ -32,6 +33,7 @@ for (let i = 0; i < tableWidth; i++) {
 }
 
 //calculate cell centers
+
 const cells = {};
 for (let i = 1; i <= tableSize; i++) {
   const element = document.getElementById(i);
@@ -41,6 +43,8 @@ for (let i = 1; i <= tableSize; i++) {
   const y = (position.top + position.bottom) / 2 - tablePosition.top;
   cells[i] = { x, y, height: position.height };
 }
+
+//class Counter - фішка
 
 class Counter {
   constructor(ctx, cells) {
@@ -105,7 +109,11 @@ const ladders = {
   '23': 60,
   '45': 82,
   '65': 94,
-  '34': 46,
+  '6': 25,
+  '37': 56,
+  '76': 99,
+  '68': 92,
+  '14': 49,
   'color': '#0db036',
   draw(ctx, cells) {
     const drawLine = key => {
@@ -131,6 +139,10 @@ const snakes = {
   '93': 72,
   '80': 43,
   '13': 4,
+  '88': 66,
+  '50': 27,
+  '86': 74,
+  '19': 3,
   'color': '#d66519',
 };
 
@@ -139,6 +151,8 @@ snakes.draw = ladders.draw.bind(snakes);
 const counter1 = new Counter(ctx, cells);
 ladders.draw(ctx, cells);
 snakes.draw(ctx, cells);
+
+//event listeners
 
 buttonDice.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
