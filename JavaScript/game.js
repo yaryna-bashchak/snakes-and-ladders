@@ -13,36 +13,47 @@ const ctx = canvas.getContext('2d');
 //table creation
 
 const tableWidth = 10;
-const tableSize = Math.pow(tableWidth, 2);
-for (let i = 0; i < tableWidth; i++) {
-  const row = document.createElement('tr');
-  const maxNumber = (tableWidth - i) * tableWidth;
-  for (let j = 0; j < tableWidth; j++) {
-    const cell = document.createElement('th');
-    let current = maxNumber;
-    if (i % 2 === 0) {
-      current -= j;
-    } else {
-      current += -tableWidth + j + 1;
+const tableHeight = tableWidth;
+const tableSize = tableWidth * tableHeight;
+
+const createTable = (width, height) => {
+  for (let i = 0; i < height; i++) {
+    const row = document.createElement('tr');
+    const maxNumber = (height - i) * width;
+    for (let j = 0; j < width; j++) {
+      const cell = document.createElement('th');
+      let current = maxNumber;
+      current += (i % 2 === 0) ? -j : (j - width + 1);
+      cell.textContent = current;
+      cell.setAttribute('id', current);
+      row.appendChild(cell);
     }
-    cell.textContent = current;
-    cell.setAttribute('id', current);
-    row.appendChild(cell);
+    table.appendChild(row);
   }
-  table.appendChild(row);
-}
+};
+
+
 
 //calculate cell centers
 
-const cells = {};
-for (let i = 1; i <= tableSize; i++) {
-  const element = document.getElementById(i);
-  const position = element.getBoundingClientRect();
-  //x,y - cell center coordinates
-  const x = (position.left + position.right) / 2 - tablePosition.left;
-  const y = (position.top + position.bottom) / 2 - tablePosition.top;
-  cells[i] = { x, y, height: position.height };
-}
+const calcMiddle = (begin, end, cell, table) =>
+  (cell[begin] + cell[end]) / 2 - table[begin];
+
+const calcCellCenters = size => {
+  const obj = {};
+  for (let i = 1; i <= size; i++) {
+    const position = document.getElementById(i).getBoundingClientRect();
+    //x,y - cell center coordinates
+    const x = calcMiddle('left', 'right', position, tablePosition);
+    const y = calcMiddle('top', 'bottom', position, tablePosition);
+    obj[i] = { x, y, height: position.height };
+  }
+  return obj;
+};
+
+
+
+const random = max => Math.floor(Math.random() * max) + 1;
 
 //class Counter - фішка
 
@@ -51,7 +62,7 @@ class Counter {
     this.ctx = ctx;
     this.cells = cells;
     this.score = 1;
-    this.number = Math.floor(Math.random() * 10) + 1;
+    this.number = random(10);
   }
 
   set number(i) {
@@ -67,14 +78,17 @@ class Counter {
 
   draw() {
     const coord = this.cells[this.score];
-    this.ctx.drawImage(this.image,
+    this.ctx.drawImage(
+      this.image,
       coord.x - this.width / 2,
       coord.y - this.height / 2,
-      this.width, this.height);
+      this.width,
+      this.height,
+    );
   }
 
   step() {
-    const point = Math.floor(Math.random() * 6) + 1;
+    const point = random(6);
     this.score += point;
     this.note(point);
   }
@@ -148,6 +162,10 @@ const snakes = {
 
 snakes.draw = ladders.draw.bind(snakes);
 
+//draw the starting field
+
+createTable(tableWidth, tableHeight);
+const cells = calcCellCenters(tableSize);
 const counter1 = new Counter(ctx, cells);
 ladders.draw(ctx, cells);
 snakes.draw(ctx, cells);
