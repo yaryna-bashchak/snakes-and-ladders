@@ -15,6 +15,8 @@ const ctx = canvas.getContext('2d');
 const tableWidth = 10;
 const tableHeight = tableWidth;
 const tableSize = tableWidth * tableHeight;
+const nLadders = Math.floor(0.1 * tableSize);
+const nSnakes = nLadders;
 
 const createTable = (width, height) => {
   for (let i = 0; i < height; i++) {
@@ -46,14 +48,32 @@ const calcCellCenters = size => {
     //x,y - cell center coordinates
     const x = calcMiddle('left', 'right', position, tablePosition);
     const y = calcMiddle('top', 'bottom', position, tablePosition);
-    obj[i] = { x, y, height: position.height };
+    obj[i] = { x, y, height: position.height, isUsed: false };
   }
   return obj;
 };
 
 
 
-const random = max => Math.floor(Math.random() * max) + 1;
+const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+const randomNotUsed = (min, max, obj) => {
+  let result;
+  while (!result) {
+    const x = random(min, max);
+    if (obj[x].isUsed === false) {
+      obj[x].isUsed = true;
+      result = x;
+    }
+  }
+  return result;
+};
+
+const queue = (x, y, isFirstSmaller) => {
+  if (((x < y) && isFirstSmaller) || ((x > y) && !isFirstSmaller))
+    return [x, y];
+  return [y, x];
+};
 
 //class Counter - фішка
 
@@ -62,7 +82,7 @@ class Counter {
     this.ctx = ctx;
     this.cells = cells;
     this.score = 1;
-    this.number = random(10);
+    this.number = random(1, 10);
   }
 
   set number(i) {
@@ -88,7 +108,7 @@ class Counter {
   }
 
   step() {
-    const point = random(6);
+    const point = random(1, 6);
     this.score += point;
     this.note(point);
   }
@@ -118,17 +138,20 @@ class Counter {
 
 //Ladders
 const ladders = {
-  '2': 36,
-  '12': 53,
-  '23': 60,
-  '45': 82,
-  '65': 94,
-  '6': 25,
-  '37': 56,
-  '76': 99,
-  '68': 92,
-  '14': 49,
   'color': '#0db036',
+  'isFirstSmaller': true,
+
+  generate(n, size, obj) {
+    for (let i = 1; i <= n; i++) {
+      const [first, second] = queue(
+        randomNotUsed(2, size - 1, obj),
+        randomNotUsed(2, size - 1, obj),
+        this.isFirstSmaller
+      );
+      this[first] = second;
+    }
+  },
+
   draw(ctx, cells) {
     const drawLine = key => {
       ctx.beginPath();
@@ -147,26 +170,20 @@ const ladders = {
 
 //Snakes
 const snakes = {
-  '58': 21,
-  '75': 54,
-  '84': 62,
-  '93': 72,
-  '80': 43,
-  '13': 4,
-  '88': 66,
-  '50': 27,
-  '86': 74,
-  '19': 3,
   'color': '#d66519',
+  'isFirstSmaller': false,
 };
 
 snakes.draw = ladders.draw.bind(snakes);
+snakes.generate = ladders.generate.bind(snakes);
 
 //draw the starting field
 
 createTable(tableWidth, tableHeight);
 const cells = calcCellCenters(tableSize);
 const counter1 = new Counter(ctx, cells);
+ladders.generate(nLadders, tableSize, cells);
+snakes.generate(nSnakes, tableSize, cells);
 ladders.draw(ctx, cells);
 snakes.draw(ctx, cells);
 
