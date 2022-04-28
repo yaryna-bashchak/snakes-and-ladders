@@ -78,11 +78,11 @@ const rightQueue = (x, y, isFirstSmaller) => {
 //class Counter - фішка
 
 class Counter {
-  constructor(ctx, cells) {
+  constructor(ctx, cells, number) {
     this.ctx = ctx;
     this.cells = cells;
     this.score = 1;
-    this.number = random(1, 10);
+    this.number = number;
   }
 
   set number(i) {
@@ -186,6 +186,7 @@ snakes.generate(nSnakes, tableSize, cells);
 ladders.draw(ctx, cells);
 snakes.draw(ctx, cells);
 const counters = [];
+const usedNumbers = [];
 
 //event listeners
 
@@ -205,6 +206,18 @@ buttonDice.onclick = () => {
 };
 
 buttonNewPlayer.onclick = () => {
-  const counter = new Counter(ctx, cells);
+  let number;
+  while (!number) {
+    const x = random(1, 10);
+    if (!usedNumbers.includes(x)) number = x;
+  }
+  const counter = new Counter(ctx, cells, number);
   counters.push(counter);
+  usedNumbers.push(number);
+  if (counters.length === 10) {
+    buttonNewPlayer.onclick = () => alert(`
+      No more players can join.
+      Players limit: 10
+    `);
+  }
 };
