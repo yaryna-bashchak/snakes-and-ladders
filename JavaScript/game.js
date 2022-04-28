@@ -185,11 +185,11 @@ ladders.generate(nLadders, tableSize, cells);
 snakes.generate(nSnakes, tableSize, cells);
 ladders.draw(ctx, cells);
 snakes.draw(ctx, cells);
-const counters = [];
-const usedNumbers = [];
 
 //functions for buttons
 
+const counters = [];
+const usedNumbers = [];
 let queue = 0;
 
 const rollDice = () => {
