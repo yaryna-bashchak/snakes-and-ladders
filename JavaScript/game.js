@@ -188,11 +188,11 @@ snakes.draw(ctx, cells);
 const counters = [];
 const usedNumbers = [];
 
-//event listeners
+//functions for buttons
 
 let queue = 0;
 
-buttonDice.onclick = () => {
+const rollDice = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   counters[queue].step();
   counters[queue].checkScore();
@@ -205,7 +205,17 @@ buttonDice.onclick = () => {
   else queue = 0;
 };
 
-buttonNewPlayer.onclick = () => {
+const gameHasBegun = () => alert(`
+  Sorry, no more players can join.
+  The game has already begun
+`);
+
+const playersLimit = () => alert(`
+  Sorry, no more players can join.
+  Players limit: 10
+`);
+
+const addPlayer = () => {
   let number;
   while (!number) {
     const x = random(1, 10);
@@ -214,10 +224,15 @@ buttonNewPlayer.onclick = () => {
   const counter = new Counter(ctx, cells, number);
   counters.push(counter);
   usedNumbers.push(number);
-  if (counters.length === 10) {
-    buttonNewPlayer.onclick = () => alert(`
-      No more players can join.
-      Players limit: 10
-    `);
-  }
+  if (counters.length === 10)
+    buttonNewPlayer.onclick = playersLimit;
+};
+
+//event listeners
+
+buttonNewPlayer.onclick = addPlayer;
+
+buttonDice.onclick = () => {
+  buttonNewPlayer.onclick = gameHasBegun;
+  buttonDice.onclick = rollDice;
 };
