@@ -78,11 +78,12 @@ const rightQueue = (x, y, isFirstSmaller) => {
 //class Counter - фішка
 
 class Counter {
-  constructor(ctx, cells, number) {
+  constructor(ctx, cells, number, i) {
     this.ctx = ctx;
     this.cells = cells;
     this.score = 1;
     this.number = number;
+    this.name = prompt('Please enter your name', `Player${i}`);
   }
 
   set number(i) {
@@ -119,13 +120,13 @@ class Counter {
       this.score = tableSize - delta;
     } else if (this.score === tableSize) {
       buttonDice.onclick = () => {};
-      winner.textContent = '🎉Player1 win!';
+      winner.textContent = `🎉${this.name} win!`;
       info.textContent = '🔁To play again please reload the page';
     }
   }
 
   note(point) {
-    lastEvent.textContent = `Player1: ${point} point(-s)`;
+    lastEvent.textContent = `${this.name}: ${point} point(-s)`;
   }
 
   carry(dict) {
@@ -221,9 +222,9 @@ const addPlayer = () => {
     const x = random(1, 10);
     if (!usedNumbers.includes(x)) number = x;
   }
-  const counter = new Counter(ctx, cells, number);
-  counters.push(counter);
   usedNumbers.push(number);
+  const counter = new Counter(ctx, cells, number, usedNumbers.length);
+  counters.push(counter);
   if (counters.length === 10)
     buttonNewPlayer.onclick = playersLimit;
 };
