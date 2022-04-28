@@ -69,7 +69,7 @@ const randomNotUsed = (min, max, obj) => {
   return result;
 };
 
-const queue = (x, y, isFirstSmaller) => {
+const rightQueue = (x, y, isFirstSmaller) => {
   if (((x < y) && isFirstSmaller) || ((x > y) && !isFirstSmaller))
     return [x, y];
   return [y, x];
@@ -143,7 +143,7 @@ const ladders = {
 
   generate(n, size, obj) {
     for (let i = 1; i <= n; i++) {
-      const [first, second] = queue(
+      const [first, second] = rightQueue(
         randomNotUsed(2, size - 1, obj),
         randomNotUsed(2, size - 1, obj),
         this.isFirstSmaller
@@ -181,24 +181,30 @@ snakes.generate = ladders.generate.bind(snakes);
 
 createTable(tableWidth, tableHeight);
 const cells = calcCellCenters(tableSize);
-const counter1 = new Counter(ctx, cells);
 ladders.generate(nLadders, tableSize, cells);
 snakes.generate(nSnakes, tableSize, cells);
 ladders.draw(ctx, cells);
 snakes.draw(ctx, cells);
+const counters = [];
 
 //event listeners
 
+let queue = 0;
+
 buttonDice.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  counter1.step();
-  counter1.checkScore();
-  counter1.carry(ladders);
-  counter1.carry(snakes);
+  counters[queue].step();
+  counters[queue].checkScore();
+  counters[queue].carry(ladders);
+  counters[queue].carry(snakes);
   ladders.draw(ctx, cells);
   snakes.draw(ctx, cells);
-  counter1.draw();
-  console.log(counter1.score);
+  for (const counter of counters) counter.draw();
+  if (queue < counters.length - 1) queue++;
+  else queue = 0;
 };
 
-buttonNewPlayer.onclick = () => {};
+buttonNewPlayer.onclick = () => {
+  const counter = new Counter(ctx, cells);
+  counters.push(counter);
+};
