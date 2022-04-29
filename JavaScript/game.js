@@ -120,7 +120,8 @@ class Counter {
       const delta = this.score - tableSize;
       this.score = tableSize - delta;
     } else if (this.score === tableSize) {
-      buttonDice.onclick = () => {};
+      buttonDice.onclick = () => gameOver(this.name);
+      buttonNewPlayer.onclick = () => gameOver(this.name);
       winner.textContent = `🎉${this.name} win!`;
       info.textContent = '🔁To play again please reload the page';
     }
@@ -221,6 +222,11 @@ const playersLimit = () => alert(`
 const noPlayer = () => alert(`
   There are no players in the game.
   Click on "New player"
+`);
+
+const gameOver = name => alert(`
+  🎉${name} win!
+  🔁To play again please reload the page
 `);
 
 const writePlayerInList = (list, name, image, items) => {
