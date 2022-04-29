@@ -7,6 +7,7 @@ const buttonNewPlayer = document.getElementById('new player');
 const lastEvent = document.getElementById('last-event');
 const winner = document.getElementById('winner');
 const info = document.getElementById('info');
+const playersListDiv = document.getElementById('list-of-players');
 const tablePosition = table.getBoundingClientRect();
 const ctx = canvas.getContext('2d');
 
@@ -109,9 +110,9 @@ class Counter {
   }
 
   step() {
-    const point = random(1, 6);
-    this.score += point;
-    this.note(point);
+    const points = random(1, 6);
+    this.score += points;
+    return points;
   }
 
   checkScore() {
@@ -125,15 +126,14 @@ class Counter {
     }
   }
 
-  note(point) {
-    lastEvent.textContent = `${this.name}: ${point} point(-s)`;
+  note(points, items) {
+    lastEvent.textContent = `${this.name}: ${points} point(-s)`;
+    items[this.name].textContent = ` ${this.name}: ${this.score} points`;
   }
 
   carry(dict) {
-    if (dict.hasOwnProperty(this.score)) {
-      info.textContent = this.score + ' => ' + dict[this.score];
+    if (dict.hasOwnProperty(this.score))
       this.score = dict[this.score];
-    }
   }
 }
 
@@ -191,14 +191,16 @@ snakes.draw(ctx, cells);
 
 const counters = [];
 const usedNumbers = [];
+const scoreItems = {};
 let queue = 0;
 
 const rollDice = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  counters[queue].step();
+  const points = counters[queue].step();
   counters[queue].checkScore();
   counters[queue].carry(ladders);
   counters[queue].carry(snakes);
+  counters[queue].note(points, scoreItems);
   ladders.draw(ctx, cells);
   snakes.draw(ctx, cells);
   for (const counter of counters) counter.draw();
@@ -216,6 +218,25 @@ const playersLimit = () => alert(`
   Players limit: 10
 `);
 
+const noPlayer = () => alert(`
+  There are no players in the game.
+  Click on "New player"
+`);
+
+const writePlayerInList = (list, name, image, items) => {
+  const row = document.createElement('div');
+  row.setAttribute('class', 'item');
+  image.height = '30';
+  row.appendChild(image);
+  const span = document.createElement('span');
+  span.textContent = ` ${name}: 1 point`;
+  span.setAttribute('class', 'text-in-item');
+  span.setAttribute('id', name);
+  items[name] = span;
+  row.appendChild(span);
+  list.appendChild(row);
+};
+
 const addPlayer = () => {
   let number;
   while (!number) {
@@ -227,13 +248,19 @@ const addPlayer = () => {
   counters.push(counter);
   if (counters.length === 10)
     buttonNewPlayer.onclick = playersLimit;
+  writePlayerInList(playersListDiv, counter.name, counter.image, scoreItems);
 };
 
 //event listeners
 
-buttonNewPlayer.onclick = addPlayer;
-
-buttonDice.onclick = () => {
-  buttonNewPlayer.onclick = gameHasBegun;
-  buttonDice.onclick = rollDice;
+buttonNewPlayer.onclick = () => {
+  addPlayer();
+  buttonNewPlayer.onclick = addPlayer;
+  buttonDice.onclick = () => {
+    rollDice();
+    buttonNewPlayer.onclick = gameHasBegun;
+    buttonDice.onclick = rollDice;
+  };
 };
+
+buttonDice.onclick = noPlayer;
