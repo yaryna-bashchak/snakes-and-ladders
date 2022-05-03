@@ -8,7 +8,7 @@ const lastEvent = document.getElementById('last-event');
 const winner = document.getElementById('winner');
 const info = document.getElementById('info');
 const playersListDiv = document.getElementById('list-of-players');
-const tablePosition = table.getBoundingClientRect();
+let tablePosition = table.getBoundingClientRect();
 const ctx = canvas.getContext('2d');
 
 //table creation
@@ -35,7 +35,13 @@ const createTable = (width, height) => {
   }
 };
 
+//canvas position
 
+const fixCanvasPosition = () => {
+  tablePosition = table.getBoundingClientRect();
+  canvas.style.left = `${tablePosition.left}px`;
+  canvas.style.top = `${tablePosition.top}px`;
+};
 
 //calculate cell centers
 
@@ -53,8 +59,6 @@ const calcCellCenters = size => {
   }
   return obj;
 };
-
-
 
 const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -182,6 +186,7 @@ snakes.generate = ladders.generate.bind(snakes);
 //draw the starting field
 
 createTable(tableWidth, tableHeight);
+fixCanvasPosition();
 const cells = calcCellCenters(tableSize);
 ladders.generate(nLadders, tableSize, cells);
 snakes.generate(nSnakes, tableSize, cells);
@@ -202,6 +207,7 @@ const rollDice = () => {
   counters[queue].carry(ladders);
   counters[queue].carry(snakes);
   counters[queue].note(points, scoreItems);
+  fixCanvasPosition();
   ladders.draw(ctx, cells);
   snakes.draw(ctx, cells);
   for (const counter of counters) counter.draw();
@@ -270,3 +276,5 @@ buttonNewPlayer.onclick = () => {
 };
 
 buttonDice.onclick = noPlayer;
+
+window.onresize = fixCanvasPosition;

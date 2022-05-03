@@ -2,7 +2,7 @@ h1 {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 30px;
   font-weight: normal;
-  text-align: left;
+  text-align: center;
   margin: 30px;
 }
 
@@ -29,6 +29,7 @@ canvas {
 #play-space {
   display: grid;
   grid-template-columns: 620px auto;
+  justify-content: center;
 }
 
 p {
