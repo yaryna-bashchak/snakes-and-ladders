@@ -207,7 +207,6 @@ const rollDice = () => {
   counters[queue].carry(ladders);
   counters[queue].carry(snakes);
   counters[queue].note(points, scoreItems);
-  fixCanvasPosition();
   ladders.draw(ctx, cells);
   snakes.draw(ctx, cells);
   for (const counter of counters) counter.draw();

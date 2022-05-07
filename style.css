@@ -12,6 +12,7 @@ table {
   border: 1px solid #00a2ff;
   border-spacing: 10px;
   border-radius: 4%;
+  grid-area: b;
 }
 
 th {
@@ -28,8 +29,14 @@ canvas {
 
 #play-space {
   display: grid;
-  grid-template-columns: 620px auto;
-  justify-content: center;
+  grid-template-columns: 1fr 600px 1fr;
+  grid-gap: 20px;
+  grid-template-areas:
+    "a b c";
+}
+
+#panel {
+  grid-area: c;
 }
 
 p {
