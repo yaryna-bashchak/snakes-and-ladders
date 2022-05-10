@@ -89,6 +89,7 @@ class Counter {
     this.score = 1;
     this.number = number;
     this.name = prompt('Please enter your name', `Player${i}`);
+    this.isNext = true;
   }
 
   set number(i) {
@@ -114,16 +115,13 @@ class Counter {
   }
 
   step() {
-    const points = random(1, 6);
-    this.score += points;
-    return points;
+    if (this.isNext === true) this.score++;
+    else this.score--;
+    if (this.score === tableSize) this.isNext = false;
   }
 
   checkScore() {
-    if (this.score > tableSize) {
-      const delta = this.score - tableSize;
-      this.score = tableSize - delta;
-    } else if (this.score === tableSize) {
+    if (this.score === tableSize) {
       buttonDice.onclick = () => gameOver(this.name);
       buttonNewPlayer.onclick = () => gameOver(this.name);
       winner.textContent = `🎉${this.name} win!`;
@@ -200,19 +198,33 @@ const usedNumbers = [];
 const scoreItems = {};
 let queue = 0;
 
-const rollDice = () => {
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const drawAll = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const points = counters[queue].step();
-  counters[queue].checkScore();
-  counters[queue].carry(ladders);
-  counters[queue].carry(snakes);
-  counters[queue].note(points, scoreItems);
   ladders.draw(ctx, cells);
   snakes.draw(ctx, cells);
   for (const counter of counters) counter.draw();
+};
+
+async function rollDice() {
+  buttonDice.onclick = () => {};
+  const points = random(1, 6);
+  for (let i = 0; i < points; i++) {
+    counters[queue].step();
+    drawAll();
+    await sleep(700 / points);
+  }
+  counters[queue].isNext = true;
+  counters[queue].carry(ladders);
+  counters[queue].carry(snakes);
+  counters[queue].note(points, scoreItems);
+  drawAll();
+  buttonDice.onclick = rollDice;
+  counters[queue].checkScore();
   if (queue < counters.length - 1) queue++;
   else queue = 0;
-};
+}
 
 const gameHasBegun = () => alert(`
   Sorry, no more players can join.
