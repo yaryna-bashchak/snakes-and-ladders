@@ -83,12 +83,12 @@ const rightQueue = (x, y, isFirstSmaller) => {
 //class Counter - фішка
 
 class Counter {
-  constructor(ctx, cells, number, i) {
+  constructor(ctx, cells, number, name) {
     this.ctx = ctx;
     this.cells = cells;
     this.score = 1;
     this.number = number;
-    this.name = prompt('Please enter your name', `Player${i}`);
+    this.name = name;
     this.isNext = true;
   }
 
@@ -260,30 +260,57 @@ const writePlayerInList = (list, name, image, items) => {
   list.appendChild(row);
 };
 
+const isNameUnique = (name, counters) => {
+  let result = true;
+  for (const counter of counters)
+    if (name === counter.name) {
+      result = false;
+      break;
+    }
+  return result;
+};
+
 const addPlayer = () => {
-  let number;
-  while (!number) {
-    const x = random(1, 10);
-    if (!usedNumbers.includes(x)) number = x;
+  const name = prompt(
+    'Please enter your name',
+    `Player${usedNumbers.length + 1}`
+  );
+  if (name) {
+    if (isNameUnique(name, counters)) {
+      let number;
+      while (!number) {
+        const x = random(1, 10);
+        if (!usedNumbers.includes(x)) number = x;
+      }
+      usedNumbers.push(number);
+      const counter = new Counter(ctx, cells, number, name);
+      counters.push(counter);
+      if (counters.length === 10)
+        buttonNewPlayer.onclick = playersLimit;
+      writePlayerInList(
+        playersListDiv,
+        counter.name,
+        counter.image,
+        scoreItems,
+      );
+      return true;
+    } else {
+      alert(`Name ${name} already exist`);
+    }
   }
-  usedNumbers.push(number);
-  const counter = new Counter(ctx, cells, number, usedNumbers.length);
-  counters.push(counter);
-  if (counters.length === 10)
-    buttonNewPlayer.onclick = playersLimit;
-  writePlayerInList(playersListDiv, counter.name, counter.image, scoreItems);
 };
 
 //event listeners
 
 buttonNewPlayer.onclick = () => {
-  addPlayer();
-  buttonNewPlayer.onclick = addPlayer;
-  buttonDice.onclick = () => {
-    rollDice();
-    buttonNewPlayer.onclick = gameHasBegun;
-    buttonDice.onclick = rollDice;
-  };
+  if (addPlayer()) {
+    buttonNewPlayer.onclick = addPlayer;
+    buttonDice.onclick = () => {
+      rollDice();
+      buttonNewPlayer.onclick = gameHasBegun;
+      buttonDice.onclick = rollDice;
+    };
+  }
 };
 
 buttonDice.onclick = noPlayer;
