@@ -3,7 +3,9 @@
 const canvas = document.getElementById('canvas');
 const table = document.getElementById('table');
 const buttonDice = document.getElementById('dice');
-const buttonNewPlayer = document.getElementById('new player');
+const buttonAddPlayer = document.getElementById('add-player');
+const inputName = document.getElementById('input-name');
+const errorName = document.getElementById('error-name');
 const lastEvent = document.getElementById('last-event');
 const winner = document.getElementById('winner');
 const info = document.getElementById('info');
@@ -123,7 +125,7 @@ class Counter {
   checkScore() {
     if (this.score === tableSize) {
       buttonDice.onclick = () => gameOver(this.name);
-      buttonNewPlayer.onclick = () => gameOver(this.name);
+      buttonAddPlayer.onclick = () => gameOver(this.name);
       winner.textContent = `🎉${this.name} win!`;
       info.textContent = '🔁To play again please reload the page';
     }
@@ -195,6 +197,7 @@ snakes.draw(ctx, cells);
 
 const counters = [];
 const usedNumbers = [];
+inputName.value = `Player${usedNumbers.length + 1}`;
 const scoreItems = {};
 let queue = 0;
 
@@ -208,6 +211,7 @@ const drawAll = () => {
 };
 
 async function rollDice() {
+  clearText(errorName);
   buttonDice.onclick = () => {};
   const points = random(1, 6);
   for (let i = 0; i < points; i++) {
@@ -226,15 +230,19 @@ async function rollDice() {
   else queue = 0;
 }
 
-const gameHasBegun = () => alert(`
+const gameHasBegun = `
   Sorry, no more players can join.
   The game has already begun
-`);
+`;
 
-const playersLimit = () => alert(`
+const errorPlayersLimit = `
   Sorry, no more players can join.
   Players limit: 10
-`);
+`;
+
+const errorNameExist = name => `! ${name} already exist`;
+
+const errorNameNull = '! Name cannot be empty';
 
 const noPlayer = () => alert(`
   There are no players in the game.
@@ -245,6 +253,8 @@ const gameOver = name => alert(`
   🎉${name} win!
   🔁To play again please reload the page
 `);
+
+const clearText = element => element.textContent = '';
 
 const writePlayerInList = (list, name, image, items) => {
   const row = document.createElement('div');
@@ -271,10 +281,8 @@ const isNameUnique = (name, counters) => {
 };
 
 const addPlayer = () => {
-  const name = prompt(
-    'Please enter your name',
-    `Player${usedNumbers.length + 1}`
-  );
+  const name = inputName.value;
+  clearText(errorName);
   if (name) {
     if (isNameUnique(name, counters)) {
       let number;
@@ -286,28 +294,35 @@ const addPlayer = () => {
       const counter = new Counter(ctx, cells, number, name);
       counters.push(counter);
       if (counters.length === 10)
-        buttonNewPlayer.onclick = playersLimit;
+        buttonAddPlayer.onclick = () =>
+          errorName.textContent = errorPlayersLimit;
       writePlayerInList(
         playersListDiv,
         counter.name,
         counter.image,
         scoreItems,
       );
-      return true;
     } else {
-      alert(`Name ${name} already exist`);
+      errorName.textContent = errorNameExist(name);
+      return;
     }
+  } else {
+    errorName.textContent = errorNameNull;
   }
+  inputName.value = `Player${usedNumbers.length + 1}`;
 };
 
 //event listeners
 
-buttonNewPlayer.onclick = () => {
-  if (addPlayer()) {
-    buttonNewPlayer.onclick = addPlayer;
+buttonAddPlayer.onclick = () => {
+  const prev = counters.length;
+  addPlayer();
+  if (prev + 1 === counters.length) {
+    buttonAddPlayer.onclick = addPlayer;
     buttonDice.onclick = () => {
       rollDice();
-      buttonNewPlayer.onclick = gameHasBegun;
+      buttonAddPlayer.onclick = () =>
+        errorName.textContent = gameHasBegun;
       buttonDice.onclick = rollDice;
     };
   }

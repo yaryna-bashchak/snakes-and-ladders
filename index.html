@@ -13,7 +13,12 @@
     <canvas id="canvas" width="600px" height="600px"></canvas>
     <table id="table"></table>
     <div id="panel">
-      <button id="new player">New player</button>
+      <form>
+        <label for="input-name">Player name:</label><br>
+        <input type="text" id="input-name"><br>
+        <article class="error" id="error-name"></article>
+        <input id="add-player" type="button" value="Add player">
+      </form>
       <button id="dice">Roll the dice</button>
       <p id="last-event">The game hasn't started yet</p>
       <div id="list-of-players">
