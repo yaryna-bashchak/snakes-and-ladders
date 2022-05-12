@@ -6,6 +6,7 @@ const buttonDice = document.getElementById('dice');
 const buttonAddPlayer = document.getElementById('add-player');
 const inputName = document.getElementById('input-name');
 const errorName = document.getElementById('error-name');
+const errorDice = document.getElementById('error-dice');
 const lastEvent = document.getElementById('last-event');
 const winner = document.getElementById('winner');
 const info = document.getElementById('info');
@@ -124,8 +125,9 @@ class Counter {
 
   checkScore() {
     if (this.score === tableSize) {
-      buttonDice.onclick = () => gameOver(this.name);
-      buttonAddPlayer.onclick = () => gameOver(this.name);
+      const winnerMessage = gameOver(this.name);
+      buttonDice.onclick = () => winnerMessage(errorDice);
+      buttonAddPlayer.onclick = () => winnerMessage(errorName);
       winner.textContent = `🎉${this.name} win!`;
       info.textContent = '🔁To play again please reload the page';
     }
@@ -211,7 +213,7 @@ const drawAll = () => {
 };
 
 async function rollDice() {
-  clearText(errorName);
+  clearAllErrors();
   buttonDice.onclick = () => {};
   const points = random(1, 6);
   for (let i = 0; i < points; i++) {
@@ -230,31 +232,39 @@ async function rollDice() {
   else queue = 0;
 }
 
-const gameHasBegun = `
+const gameHasBegun = () => `
   Sorry, no more players can join.
   The game has already begun
 `;
 
-const errorPlayersLimit = `
+const errorPlayersLimit = () => `
   Sorry, no more players can join.
   Players limit: 10
 `;
 
 const errorNameExist = name => `! ${name} already exist`;
 
-const errorNameNull = '! Name cannot be empty';
+const errorNameNull = () => '! Name cannot be empty';
 
-const noPlayer = () => alert(`
+const noPlayer = () => `
   There are no players in the game.
   Click on "New player"
-`);
+`;
 
-const gameOver = name => alert(`
-  🎉${name} win!
-  🔁To play again please reload the page
-`);
+const gameOver = name => field => {
+  const text = `
+    🎉${name} win!
+    🔁To play again please reload the page
+  `;
+  clearAllErrors();
+  fillText(field, text);
+};
 
-const clearText = element => element.textContent = '';
+const fillText = (element, text) => element.textContent = text;
+const clearAllErrors = () => {
+  for (const element of [errorName, errorDice])
+    fillText(element, '');
+};
 
 const writePlayerInList = (list, name, image, items) => {
   const row = document.createElement('div');
@@ -262,7 +272,7 @@ const writePlayerInList = (list, name, image, items) => {
   image.height = '30';
   row.appendChild(image);
   const span = document.createElement('span');
-  span.textContent = ` ${name}: 1 point`;
+  fillText(span, ` ${name}: 1 point`);
   span.setAttribute('class', 'text-in-item');
   span.setAttribute('id', name);
   items[name] = span;
@@ -282,7 +292,7 @@ const isNameUnique = (name, counters) => {
 
 const addPlayer = () => {
   const name = inputName.value;
-  clearText(errorName);
+  clearAllErrors();
   if (name) {
     if (isNameUnique(name, counters)) {
       let number;
@@ -295,7 +305,7 @@ const addPlayer = () => {
       counters.push(counter);
       if (counters.length === 10)
         buttonAddPlayer.onclick = () =>
-          errorName.textContent = errorPlayersLimit;
+          fillText(errorName, errorPlayersLimit());
       writePlayerInList(
         playersListDiv,
         counter.name,
@@ -303,18 +313,21 @@ const addPlayer = () => {
         scoreItems,
       );
     } else {
-      errorName.textContent = errorNameExist(name);
+      fillText(errorName, errorNameExist(name));
       return;
     }
   } else {
-    errorName.textContent = errorNameNull;
+    fillText(errorName, errorNameNull());
   }
-  inputName.value = `Player${usedNumbers.length + 1}`;
+  inputName.value =
+    (counters.length < 10) ?
+      `Player${counters.length + 1}` : '';
 };
 
 //event listeners
 
 buttonAddPlayer.onclick = () => {
+  clearAllErrors();
   const prev = counters.length;
   addPlayer();
   if (prev + 1 === counters.length) {
@@ -322,12 +335,15 @@ buttonAddPlayer.onclick = () => {
     buttonDice.onclick = () => {
       rollDice();
       buttonAddPlayer.onclick = () =>
-        errorName.textContent = gameHasBegun;
+        fillText(errorName, gameHasBegun());
       buttonDice.onclick = rollDice;
     };
   }
 };
 
-buttonDice.onclick = noPlayer;
+buttonDice.onclick = () => {
+  clearAllErrors();
+  fillText(errorDice, noPlayer());
+};
 
 window.onresize = fixCanvasPosition;

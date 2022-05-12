@@ -71,6 +71,7 @@ form {
   font-size: 14px;
   margin: 0px;
   color: #eb0000;
+  width: 200px;
 }
 
 button, #add-player {
@@ -81,7 +82,7 @@ button, #add-player {
   border: 2px solid #8fa800;
   color: white;
   font-size: 18px;
-  margin: 10px 0px 10px;
+  margin: 10px 0px 5px;
   cursor: pointer;
 }
 
