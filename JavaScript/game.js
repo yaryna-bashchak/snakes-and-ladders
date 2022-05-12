@@ -198,8 +198,9 @@ snakes.draw(ctx, cells);
 //functions for buttons
 
 const counters = [];
-const usedNumbers = [];
-inputName.value = `Player${usedNumbers.length + 1}`;
+const notUsedNumbers = [...Array(11).keys()];
+notUsedNumbers.shift();
+inputName.value = `Player${counters.length + 1}`;
 const scoreItems = {};
 let queue = 0;
 
@@ -295,12 +296,10 @@ const addPlayer = () => {
   clearAllErrors();
   if (name) {
     if (isNameUnique(name, counters)) {
-      let number;
-      while (!number) {
-        const x = random(1, 10);
-        if (!usedNumbers.includes(x)) number = x;
-      }
-      usedNumbers.push(number);
+      const count = notUsedNumbers.length - 1;
+      const n = random(0, count);
+      const number = notUsedNumbers[n];
+      notUsedNumbers.splice(n, 1);
       const counter = new Counter(ctx, cells, number, name);
       counters.push(counter);
       if (counters.length === 10)
