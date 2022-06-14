@@ -133,9 +133,9 @@ class Counter {
     }
   }
 
-  note(points, items) {
+  note(points, scoreItems) {
     lastEvent.textContent = `${this.name}: ${points} point(-s)`;
-    items[this.name].textContent = ` ${this.name}: ${this.score} points`;
+    scoreItems[this.name].textContent = ` ${this.name}: ${this.score} points`;
   }
 
   carry(dict) {
@@ -202,6 +202,7 @@ const notUsedNumbers = [...Array(11).keys()];
 notUsedNumbers.shift();
 inputName.value = `Player${counters.length + 1}`;
 const scoreItems = {};
+const items = {};
 let queue = 0;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -214,21 +215,22 @@ const drawAll = () => {
 };
 
 async function rollDice() {
+  const counter = counters[queue];
   clearAllErrors();
   buttonDice.onclick = () => {};
   const points = random(1, 6);
   for (let i = 0; i < points; i++) {
-    counters[queue].step();
+    counter.step();
     drawAll();
     await sleep(700 / points);
   }
-  counters[queue].isNext = true;
-  counters[queue].carry(ladders);
-  counters[queue].carry(snakes);
-  counters[queue].note(points, scoreItems);
+  counter.isNext = true;
+  counter.carry(ladders);
+  counter.carry(snakes);
+  counter.note(points, scoreItems);
   drawAll();
   buttonDice.onclick = rollDice;
-  counters[queue].checkScore();
+  counter.checkScore();
   if (queue < counters.length - 1) queue++;
   else queue = 0;
 }
@@ -267,7 +269,7 @@ const clearAllErrors = () => {
     fillText(element, '');
 };
 
-const writePlayerInList = (list, name, image, items) => {
+const writePlayerInList = (list, name, image, scoreItems, items) => {
   const row = document.createElement('div');
   row.setAttribute('class', 'item');
   image.height = '30';
@@ -275,8 +277,8 @@ const writePlayerInList = (list, name, image, items) => {
   const span = document.createElement('span');
   fillText(span, ` ${name}: 1 point`);
   span.setAttribute('class', 'text-in-item');
-  span.setAttribute('id', name);
-  items[name] = span;
+  scoreItems[name] = span;
+  items[name] = row;
   row.appendChild(span);
   list.appendChild(row);
 };
@@ -310,6 +312,7 @@ const addPlayer = () => {
         counter.name,
         counter.image,
         scoreItems,
+        items,
       );
     } else {
       fillText(errorName, errorNameExist(name));
